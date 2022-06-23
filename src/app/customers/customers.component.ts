@@ -17,7 +17,7 @@ export class CustomersComponent implements OnInit {
   ngOnInit(): void {
     this.customers=this.customerService.getCustomers().pipe(
       catchError(err => {
-        this.errorMessage=err.message();
+        this.errorMessage=err.message;
         return throwError(err);
 
 

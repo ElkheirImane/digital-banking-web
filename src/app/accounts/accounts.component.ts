@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {AccountsService} from "../services/accounts.service";
 import {catchError, Observable, throwError} from "rxjs";
 import {AccountDetails} from "../model/account.model";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-accounts',
@@ -16,13 +17,14 @@ export class AccountsComponent implements OnInit {
   accountObservable! : Observable<AccountDetails>
   operationsFormGroup! : FormGroup;
   errorMessage! :string ;
+  accountID!: string;
 
-
-  constructor(private fb : FormBuilder, private accountService : AccountsService) { }
+  constructor(private fb : FormBuilder, private accountService : AccountsService,  private route : ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.accountID = this.route.snapshot.params['id'];
     this.accountFormGroup=this.fb.group({
-      accountId : this.fb.control('')
+      accountId : this.fb.control(this.accountID)
     });
     this.operationsFormGroup=this.fb.group({
       operationType : this.fb.control(null),
@@ -36,11 +38,11 @@ export class AccountsComponent implements OnInit {
   handleSearchAccount() {
     let accountId : string=this.accountFormGroup.value.accountId;
     this.accountObservable=this.accountService.getAccount(accountId,this.currentPage,this.pageSize).pipe(
-    catchError(err => {
-      this.errorMessage=err.message;
-      return throwError(err);
-    })
-  );
+      catchError(err => {
+        this.errorMessage=err.message;
+        return throwError(err);
+      })
+    );
   }
 
   gotoPage(page: number) {
